@@ -85,6 +85,7 @@
             padding: 5px;
             border-radius: 10px;
             background-color: white;
+            filter: grayscale(100%);
         }
     </style>
 </head>
@@ -183,10 +184,10 @@
         let modelo;
         //3 puño
         //
-        const etiquetas = ["dedo_arriba","fuck_you", "puno", "mano_abierta",  "tristeza", "sonrisa", "sorpresa", "desprecio", "neutro", "enojo"];
+        const etiquetas = ["a_feliz", "v_sorpresa", "c_neutral", "d_enojado", "e_asco", "f_miedo", "g_tristeza"];
 
         async function cargarModelo() {
-            modelo = await tf.loadLayersModel('/tfjs_model_gestos/model.json');
+            modelo = await tf.loadLayersModel('/tfjs_model_gestos2/model.json');
             console.log("Modelo de gestos cargado");
         }
 
@@ -201,10 +202,10 @@
             const tensor = tf.tidy(() => {
                 // Cargar desde el <img> (color RGB), redimensionar a 28x28
                 const img = tf.browser.fromPixels(imgElement)
-                    .resizeNearestNeighbor([64, 64])
+                    .resizeNearestNeighbor([400, 400])
                     .mean(2) // convierte RGB a escala de grises
                     .toFloat()
-                    .expandDims(2) // para dejarla como [28,28,1]
+                    .expandDims(2) // para dejarla como [400,400,1]
                     .div(255.0)     // normalización
                     .expandDims(0); // para dejarla como [1,28,28,1]
                 return img;
