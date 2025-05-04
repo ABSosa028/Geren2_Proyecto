@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Analizar Gestos</title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        header {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-buttons a {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        main {
+            padding: 2rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        video,
+        canvas,
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 1rem;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin: 1rem auto;
+        }
+
+        button {
+            margin: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        footer {
+            background-color: #212529;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 3rem;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #preview {
+            display: block;
+            margin: 1rem auto;
+            max-width: 320px;
+            height: auto;
+            border: 2px dashed #888;
+            padding: 5px;
+            border-radius: 10px;
+            background-color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Analizar Gestos</h1>
+        <div class="nav-buttons">
+            <a href="/dashboard">Inicio</a>
+            <a href="/analizar-numeros">Analizar Números</a>
+        </div>
+    </header>
+
+    <main>
+        <h2>Cámara en Vivo</h2>
+        <video id="video" width="320" height="240" autoplay></video>
+        <br>
+        <button onclick="capturar()">Capturar Foto</button>
+
+        <h2>Imagen Capturada / Subida</h2>
+        <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+        <img id="preview" src="" alt="Vista previa" />
+
+        <h2>O Subir Imagen</h2>
+        <input type="file" id="fileInput" accept="image/*" />
+
+        <button onclick="comprobar()">Comprobar</button>
+
+        <div id="resultado" style="margin-top: 1rem;"></div>
+    </main>
+
+    <footer>
+        Info estudiante xxxx — completa aquí tus datos
+    </footer>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const preview = document.getElementById('preview');
+        const fileInput = document.getElementById('fileInput');
+        const ctx = canvas.getContext('2d');
+
+        // Activar cámara
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => video.srcObject = stream)
+            .catch(err => console.error('Error al acceder a la cámara', err));
+
+        function capturar() {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataURL = canvas.toDataURL('image/png');
+            preview.src = dataURL;
+            preview.style.display = 'block';
+        }
+
+        // Subir archivo manualmente
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                preview.src = event.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function comprobar() {
+            const imagenBase64 = preview.src;
+
+            if (!imagenBase64) {
+                alert("Por favor captura o sube una imagen.");
+                return;
+            }
+
+            fetch('/api/comprobar-gesto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imagen: imagenBase64 })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('resultado').innerText = 'Gesto detectado: ' + data.resultado;
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('resultado').innerText = 'Error al procesar la imagen';
+                });
+        }
+    </script>
+
+</body>
+
+</html>

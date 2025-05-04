@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar sesión</title>
+  <link rel="stylesheet" href="/css/estilos.css">
+  <style>
+    body {
+      font-family: Arial;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    .login-container h2 {
+      margin-bottom: 1rem;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .login-container button {
+      width: 100%;
+      padding: 0.5rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Iniciar sesión</h2>
+    <form method="POST" action="/login">
+      <input type="text" name="usuario" placeholder="Usuario o correo" required />
+      <input type="password" name="contrasena" placeholder="Contraseña" required />
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
+</body>
+</html>
