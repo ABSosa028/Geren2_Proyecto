@@ -153,29 +153,82 @@
             reader.readAsDataURL(file);
         });
 
-        function comprobar() {
-            const imagenBase64 = preview.src;
+        // function comprobar() {
+        //     const imagenBase64 = preview.src;
 
-            if (!imagenBase64) {
-                alert("Por favor captura o sube una imagen.");
-                return;
-            }
+        //     if (!imagenBase64) {
+        //         alert("Por favor captura o sube una imagen.");
+        //         return;
+        //     }
 
-            fetch('/api/comprobar-gesto', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imagen: imagenBase64 })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('resultado').innerText = 'Gesto detectado: ' + data.resultado;
-                })
-                .catch(err => {
-                    console.error(err);
-                    document.getElementById('resultado').innerText = 'Error al procesar la imagen';
-                });
-        }
+        //     fetch('/api/comprobar-gesto', {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify({ imagen: imagenBase64 })
+        //     })
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             document.getElementById('resultado').innerText = 'Gesto detectado: ' + data.resultado;
+        //         })
+        //         .catch(err => {
+        //             console.error(err);
+        //             document.getElementById('resultado').innerText = 'Error al procesar la imagen';
+        //         });
+        // }
     </script>
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.9.0"></script>
+
+    <script>
+        let modelo;
+        //3 puño
+        //
+        const etiquetas = ["dedo_arriba","fuck_you", "puno", "mano_abierta",  "tristeza", "sonrisa", "sorpresa", "desprecio", "neutro", "enojo"];
+
+        async function cargarModelo() {
+            modelo = await tf.loadLayersModel('/tfjs_model_gestos/model.json');
+            console.log("Modelo de gestos cargado");
+        }
+
+        cargarModelo();
+
+        async function comprobar() {
+            const imgElement = document.getElementById('preview');
+
+            if (!imgElement.src || imgElement.src.startsWith('data:,'))
+                return alert("Captura o sube una imagen antes de comprobar.");
+
+            const tensor = tf.tidy(() => {
+                // Cargar desde el <img> (color RGB), redimensionar a 28x28
+                const img = tf.browser.fromPixels(imgElement)
+                    .resizeNearestNeighbor([64, 64])
+                    .mean(2) // convierte RGB a escala de grises
+                    .toFloat()
+                    .expandDims(2) // para dejarla como [28,28,1]
+                    .div(255.0)     // normalización
+                    .expandDims(0); // para dejarla como [1,28,28,1]
+                return img;
+            });
+
+            const pred = modelo.predict(tensor);
+            const data = await pred.data();
+            console.log(data);
+
+            const resultados = Array.from(data).map((prob, i) => ({
+                gesto: etiquetas[i],
+                confianza: (prob * 100).toFixed(2)
+            }));
+
+
+            const resultadoTexto = resultados.map(r =>
+                `Gesto ${r.gesto}: ${r.confianza}%`
+            ).join('<br>');
+
+            document.getElementById('resultado').innerHTML = resultadoTexto;
+        }
+
+    </script>
+
 
 </body>
 
