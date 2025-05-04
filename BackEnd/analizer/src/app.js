@@ -10,6 +10,9 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
+/*carga estatica de modelo y otros archivos publicos */
+app.use(express.static(path.join(__dirname, 'src/public')));
+
 /*configuracion de renderizado de views */
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

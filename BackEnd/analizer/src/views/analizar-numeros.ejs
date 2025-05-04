@@ -1,153 +1,229 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Analizar Números</title>
-  <link rel="stylesheet" href="/css/estilos.css">
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background-color: #f8f9fa;
-    }
+    <meta charset="UTF-8">
+    <title>Analizar Números</title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #f8f9fa;
+        }
 
-    header {
-      background-color: #343a40;
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        header {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    header h1 {
-      margin: 0;
-    }
+        header h1 {
+            margin: 0;
+        }
 
-    .nav-buttons {
-      display: flex;
-      gap: 1rem;
-    }
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
 
-    .nav-buttons a {
-      background-color: #007bff;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      text-decoration: none;
-    }
+        .nav-buttons a {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+        }
 
-    .main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-    }
+        .main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
 
-    canvas {
-      border: 2px solid #333;
-      background-color: white;
-      cursor: crosshair;
-    }
+        canvas {
+            border: 2px solid #333;
+            background-color: white;
+            cursor: crosshair;
+        }
 
-    .controls {
-      margin-top: 1rem;
-    }
+        .controls {
+            margin-top: 1rem;
+        }
 
-    .controls button {
-      padding: 0.5rem 1rem;
-      margin: 0 0.5rem;
-      border: none;
-      background-color: #28a745;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+        .controls button {
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-    footer {
-      background-color: #212529;
-      color: white;
-      text-align: center;
-      padding: 1rem;
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-    }
-  </style>
+
+        footer {
+            background-color: #212529;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            width: 100%;
+        }
+    </style>
 </head>
+
 <body>
 
-<header>
-  <h1>Analizar Números</h1>
-  <div class="nav-buttons">
-    <a href="/dashboard">Inicio</a>
-    <a href="/analizar-gestos">Analizar Gestos</a>
-  </div>
-</header>
+    <header>
+        <h1>Analizar Números</h1>
+        <div class="nav-buttons">
+            <a href="/dashboard">Inicio</a>
+            <a href="/analizar-gestos">Analizar Gestos</a>
+        </div>
+    </header>
 
-<main class="main">
-  <canvas id="canvas" width="280" height="280"></canvas>
+    <main class="main">
+        <canvas id="canvas" width="280" height="280"></canvas>
 
-  <div class="controls">
-    <button onclick="comprobar()">Comprobar</button>
-    <button onclick="limpiarCanvas()">Limpiar</button>
-  </div>
+        <div class="controls">
+            <button onclick="comprobar()">Comprobar</button>
+            <button onclick="limpiarCanvas()">Limpiar</button>
+        </div>
 
-  <!-- Aquí se puede mostrar la predicción -->
-  <div id="resultado" style="margin-top: 1rem;"></div>
-</main>
+        <!-- Aquí se puede mostrar la predicción -->
+        <div id="resultado" style="margin-top: 1rem;"></div>
+    </main>
 
-<footer>
-  Info estudiante xxxx — completa aquí tus datos
-</footer>
+    <footer>
+        Allan Ricardo Barillas Sosa — 201906572
+    </footer>
 
-<script>
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
-  let dibujando = false;
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let dibujando = false;
 
-  ctx.lineWidth = 10;
-  ctx.lineCap = 'round';
+        ctx.lineWidth = 10;
+        ctx.lineCap = 'round';
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = 'white';
 
-  canvas.addEventListener('mousedown', e => {
-    dibujando = true;
-    ctx.beginPath();
-    ctx.moveTo(e.offsetX, e.offsetY);
-  });
+        canvas.addEventListener('mousedown', e => {
+            dibujando = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        });
 
-  canvas.addEventListener('mousemove', e => {
-    if (dibujando) {
-      ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.stroke();
-    }
-  });
+        canvas.addEventListener('mousemove', e => {
+            if (dibujando) {
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+            }
+        });
 
-  canvas.addEventListener('mouseup', () => dibujando = false);
-  canvas.addEventListener('mouseleave', () => dibujando = false);
+        canvas.addEventListener('mouseup', () => dibujando = false);
+        canvas.addEventListener('mouseleave', () => dibujando = false);
 
-  function limpiarCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
+        function limpiarCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'white';
+            // Limpiar el resultado
+            document.getElementById('resultado').innerText = '';
+        }
 
-  function comprobar() {
-    const dataUrl = canvas.toDataURL('image/png');
-    console.log('Imagen en base64:', dataUrl);
+        //   function comprobar() {
+        //     const dataUrl = canvas.toDataURL('image/png');
+        //     console.log('Imagen en base64:', dataUrl);
 
-    fetch('/api/comprobar-numero', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imagen: dataUrl })
-    })
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById('resultado').innerText = 'Número detectado: ' + data.resultado;
-    })
-    .catch(err => {
-      console.error(err);
-      document.getElementById('resultado').innerText = 'Error al procesar la imagen';
-    });
-  }
-</script>
+        //     fetch('/api/comprobar-numero', {
+        //       method: 'POST',
+        //       headers: { 'Content-Type': 'application/json' },
+        //       body: JSON.stringify({ imagen: dataUrl })
+        //     })
+        //     .then(res => res.json())
+        //     .then(data => {
+        //       document.getElementById('resultado').innerText = 'Número detectado: ' + data.resultado;
+        //     })
+        //     .catch(err => {
+        //       console.error(err);
+        //       document.getElementById('resultado').innerText = 'Error al procesar la imagen';
+        //     });
+        //   }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.9.0"></script>
+    <script>
+        let modelo;
+
+        async function cargarModelo() {
+            modelo = await tf.loadLayersModel('/tfjs_model/model.json');
+            console.log("Modelo cargado correctamente");
+        }
+
+        cargarModelo();
+
+
+        //   function comprobar() {
+        //     // Convertir la imagen del canvas a tensor
+        //     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        //     let img = tf.browser.fromPixels(imageData, 1) // 1 canal (grises)
+        //       .resizeNearestNeighbor([28, 28]) // tamaño esperado por el modelo
+        //       .toFloat()
+        //       .div(255.0) // normalización
+        //       .expandDims(0); // batch size 1
+
+        //     const prediccion = modelo.predict(img);
+        //     prediccion.array().then(array => {
+        //       const resultado = array[0];
+        //       const max = Math.max(...resultado);
+        //       const indice = resultado.indexOf(max);
+        //       document.getElementById('resultado').innerText =
+        //         `Número detectado: ${indice} (confianza: ${(max * 100).toFixed(2)}%)`;
+        //     });
+        //   }
+
+        async function comprobar() {
+            const dataUrl = canvas.toDataURL('image/png');
+
+            const img = new Image();
+            img.src = dataUrl;
+
+            img.onload = async () => {
+                let tensor = tf.browser.fromPixels(img, 1)
+                    .resizeNearestNeighbor([28, 28])
+                    .toFloat()
+                    .div(255.0)
+                    .expandDims(0);
+
+                const prediccion = modelo.predict(tensor);
+                const data = await prediccion.data();
+
+                // Construye lista de probabilidades por dígito
+                const resultados = Array.from(data).map((prob, i) => ({
+                    digito: i,
+                    confianza: (prob * 100).toFixed(2)
+                }));
+
+                // Ordenar por confianza descendente (opcional)
+                resultados.sort((a, b) => b.confianza - a.confianza);
+
+                // Mostrar todos
+                const resultadoTexto = resultados.map(r =>
+                    `Dígito ${r.digito}: ${r.confianza}%`
+                ).join('<br>');
+
+                document.getElementById('resultado').innerHTML = resultadoTexto;
+            };
+        }
+    </script>
+
 
 </body>
+
 </html>
