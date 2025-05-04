@@ -1,0 +1,28 @@
+#crear entorno con version de python 3.10
+py -3.10 -m venv venv
+#activar entorno
+.\venv\Scripts\activate
+
+
+#generar imagenes
+pip install pillow
+pip install numpy==1.26.4 --force-reinstall
+
+
+#entrenar modelo imagenes
+pip install tensorflow pillow scikit-learn
+
+#generear el modelo de js
+pip install tensorflowjs==4.13.0 --no-deps
+pip install tensorflow_decision_forests
+pip install tensorflow==2.13.0 --force-reinstall
+
+pip uninstall tensorflowjs
+pip install tensorflowjs==3.20.0
+pip install jax==0.4.13 jaxlib==0.4.13 --force-reinstall
+
+
+
+#convertir modelo .keras a tensorflowjs
+python -m tensorflowjs.converters.converter --input_format=tf_saved_model --output_format=tfjs_graph_model modelo_numeros_custom tfjs_model
+
