@@ -33,7 +33,7 @@ python -m tensorflowjs.converters.converter --input_format=tf_saved_model --outp
 #convertir modelo .h5 a tensorflowjs (gestos)
 
 #(correcto)
-(venv) PS C:\Users\Sosa\Documents\GitHub\Geren2_Proyecto\ia> tensorflowjs_converter --input_format=keras modelo_gestos_custom.h5 tfjs_model_gestos
+(venv) PS C:\Users\Sosa\Documents\GitHub\Geren2_Proyecto\ia> tensorflowjs_converter --input_format=keras modelo_gestos_custom.h5 tfjs_model_gestos2
 
 #para imagenes
 pip install opencv-python

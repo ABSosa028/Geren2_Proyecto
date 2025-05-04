@@ -4,8 +4,8 @@ import numpy as np
 import os
 from sklearn.model_selection import train_test_split
 
-ruta_base = "gestos"  # << Cambiado de "datos" a "gestos"
-tamanio_img = (64, 64)  # Puedes ajustar esto, 64x64 da mejores resultados para rostros/gestos
+ruta_base = "gestos2"  # tu nueva carpeta
+tamanio_img = (400, 400)  # mejor resolución para precisión
 clases = sorted(os.listdir(ruta_base))  # Detecta clases automáticamente
 
 imagenes = []
@@ -16,10 +16,11 @@ for i, clase in enumerate(clases):
     for archivo in os.listdir(carpeta):
         if archivo.lower().endswith((".png", ".jpg", ".jpeg")):
             img_path = os.path.join(carpeta, archivo)
-            img = load_img(img_path, color_mode='grayscale', target_size=tamanio_img)
+            img = load_img(img_path, color_mode='grayscale', target_size=tamanio_img)  # <--- aún se redimensiona
             img_array = img_to_array(img) / 255.0
             imagenes.append(img_array)
             etiquetas.append(i)
+
 
 # Convertir a arrays
 X = np.array(imagenes).reshape(-1, tamanio_img[0], tamanio_img[1], 1)
