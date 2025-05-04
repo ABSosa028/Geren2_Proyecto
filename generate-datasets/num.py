@@ -2,27 +2,39 @@ import tkinter as tk
 from PIL import Image, ImageDraw
 import os
 
-# === CONFIGURACIÓN ===
 IMG_SIZE = 28
-NUMERO = '1'  # Cambia aquí el número que estás dibujando
-OUTPUT_DIR = f'datasets/numeros/{NUMERO}'
+NUMEROS = [str(i) for i in range(10)]  # 0 al 9
 
-# Aseguramos que la carpeta exista
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+def asegurarse_directorio(num):
+    ruta = f'datasets/numeros/{num}'
+    os.makedirs(ruta, exist_ok=True)
+    return ruta
 
-# Contador de imágenes
-contador = len(os.listdir(OUTPUT_DIR))
+def contar_imagenes(num):
+    return len(os.listdir(asegurarse_directorio(num)))
 
-# Crear ventana
+# Crear ventana principal
 ventana = tk.Tk()
-ventana.title(f"Dibuja el número {NUMERO}")
+ventana.title("Dibuja un número")
 
-# Crear canvas para dibujar
+# Variable seleccionada para el número (DEBE ir después de crear la ventana)
+numero_actual = tk.StringVar()
+numero_actual.set(NUMEROS[0])
+
+# Dropdown para elegir número
+frame_top = tk.Frame(ventana)
+frame_top.pack(pady=10)
+
+tk.Label(frame_top, text="Selecciona el número:").pack(side='left')
+menu_numeros = tk.OptionMenu(frame_top, numero_actual, *NUMEROS)
+menu_numeros.pack(side='left')
+
+# Canvas para dibujar
 canvas = tk.Canvas(ventana, width=200, height=200, bg='white')
 canvas.pack()
 
-# Imagen en blanco y objeto de dibujo
-imagen = Image.new("L", (200, 200), color=255)  # L: escala de grises
+# Imagen y objeto de dibujo
+imagen = Image.new("L", (200, 200), color=255)
 dibujar = ImageDraw.Draw(imagen)
 
 def dibujar_trazo(event):
@@ -38,25 +50,23 @@ def limpiar():
     dibujar = ImageDraw.Draw(imagen)
 
 def guardar():
-    global contador
+    numero = numero_actual.get()
+    ruta = asegurarse_directorio(numero)
+    contador = contar_imagenes(numero)
     imagen_redimensionada = imagen.resize((IMG_SIZE, IMG_SIZE))
-    ruta = os.path.join(OUTPUT_DIR, f'{NUMERO}_{contador:03d}.png')
-    imagen_redimensionada.save(ruta)
-    print(f"Imagen guardada: {ruta}")
-    contador += 1
+    filename = f'{numero}_{contador:03d}.png'
+    imagen_redimensionada.save(os.path.join(ruta, filename))
+    print(f"Imagen guardada: {filename}")
     limpiar()
 
-# Vincular eventos
+# Eventos
 canvas.bind("<B1-Motion>", dibujar_trazo)
 
 # Botones
 botones = tk.Frame(ventana)
-botones.pack()
+botones.pack(pady=10)
 
-btn_guardar = tk.Button(botones, text="Guardar", command=guardar)
-btn_guardar.pack(side='left', padx=10)
-
-btn_limpiar = tk.Button(botones, text="Limpiar", command=limpiar)
-btn_limpiar.pack(side='left')
+tk.Button(botones, text="Guardar", command=guardar).pack(side='left', padx=10)
+tk.Button(botones, text="Limpiar", command=limpiar).pack(side='left')
 
 ventana.mainloop()

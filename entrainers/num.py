@@ -1,82 +1,64 @@
-import os
-import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-import matplotlib.pyplot as plt
+import os
 
-# Tamaño de las imágenes
-IMG_SIZE = 28
-BATCH_SIZE = 32
-EPOCHS = 10
+import numpy as np
+from PIL import Image
 
-# Ruta del dataset
-DATASET_DIR = 'datasets/numeros'
 
-# Preprocesamiento de imágenes
-datagen = ImageDataGenerator(
-    rescale=1./255,
-    validation_split=0.2
-)
 
-train_generator = datagen.flow_from_directory(
-    DATASET_DIR,
-    target_size=(IMG_SIZE, IMG_SIZE),
-    color_mode='grayscale',
-    class_mode='categorical',
-    batch_size=BATCH_SIZE,
-    subset='training'
-)
+# Load the MNIST dataset
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
-val_generator = datagen.flow_from_directory(
-    DATASET_DIR,
-    target_size=(IMG_SIZE, IMG_SIZE),
-    color_mode='grayscale',
-    class_mode='categorical',
-    batch_size=BATCH_SIZE,
-    subset='validation'
-)
+# Preprocess the data
+x_train = x_train.astype('float32') / 255.0
+x_test = x_test.astype('float32') / 255.0
 
-# Definición del modelo CNN
-model = Sequential([
-    Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_SIZE, IMG_SIZE, 1)),
-    MaxPooling2D(2, 2),
-    
-    Conv2D(64, (3, 3), activation='relu'),
-    MaxPooling2D(2, 2),
-    
-    Flatten(),
-    Dense(128, activation='relu'),
-    Dense(10, activation='softmax')  # 10 clases (0 a 9)
+# Build the model
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Flatten(input_shape=(28, 28)),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(10, activation='softmax')
 ])
 
-model.compile(
-    optimizer='adam',
-    loss='categorical_crossentropy',
-    metrics=['accuracy']
-)
+# Compile the model
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
 
-# Entrenamiento
-history = model.fit(
-    train_generator,
-    validation_data=val_generator,
-    epochs=EPOCHS
-)
+# Train the model
+model.fit(x_train, y_train, epochs=3)
 
-# Guardar modelo para TensorFlow.js
-model.save('modelo_numeros')
+# Evaluate the model
+loss, accuracy = model.evaluate(x_test, y_test, verbose=0)
+print('Accuracy: %.2f' % (accuracy*100))
 
-# Exportar a formato tfjs
-os.system('tensorflowjs_converter --input_format=tf_saved_model modelo_numeros ./modelo_numeros_tfjs')
+ruta = f'modelos'
+os.makedirs(ruta, exist_ok=True)
 
-# Gráfica de precisión
-plt.plot(history.history['accuracy'], label='Precisión entrenamiento')
-plt.plot(history.history['val_accuracy'], label='Precisión validación')
-plt.legend()
-plt.title('Precisión del modelo')
-plt.xlabel('Épocas')
-plt.ylabel('Precisión')
-plt.grid()
-plt.savefig('accuracy_plot.png')
-plt.show()
+model.save('modelos/numeros.keras')
+
+
+
+# Cargar imagen y convertir a escala de grises
+img = Image.open('datasets/numeros/1/1_1746303351059.png').convert('L')  # 'L' = grayscale
+
+# Redimensionar a 28x28
+img = img.resize((28, 28))
+
+# Convertir a arreglo de numpy
+img_array = np.array(img)
+
+# Invertir colores si es necesario (MNIST tiene fondo negro y dígitos blancos)
+img_array = 255 - img_array
+
+# Normalizar valores [0, 1]
+img_array = img_array / 255.0
+
+# Expandir dimensiones para que coincida con el batch (1, 28, 28, 1)
+img_array = img_array.reshape(1, 28, 28, 1)
+
+# Hacer la predicción
+prediccion = model.predict(img_array)
+digito_predicho = np.argmax(prediccion)
+
+print("El modelo predice que el dígito es:", digito_predicho)

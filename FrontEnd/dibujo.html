@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dibuja un número</title>
+  <style>
+    canvas {
+      border: 2px solid #000;
+      background: white;
+      cursor: crosshair;
+    }
+    .controls {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Dibuja un número del 0 al 9</h2>
+  <label for="numero">Número:</label>
+  <select id="numero">
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+    <option value="9">9</option>
+  </select>
+
+  <br><br>
+  <canvas id="canvas" width="200" height="200"></canvas>
+
+  <div class="controls">
+    <button onclick="limpiar()">Limpiar</button>
+    <button onclick="guardar()">Guardar</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    let dibujando = false;
+
+    canvas.addEventListener('mousedown', () => dibujando = true);
+    canvas.addEventListener('mouseup', () => dibujando = false);
+    canvas.addEventListener('mouseleave', () => dibujando = false);
+    canvas.addEventListener('mousemove', (e) => {
+      if (!dibujando) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    function limpiar() {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function guardar() {
+      const numero = document.getElementById('numero').value;
+      const dataURL = canvas.toDataURL('image/png');
+      const enlace = document.createElement('a');
+      enlace.href = dataURL;
+      enlace.download = `${numero}_${Date.now()}.png`;
+      enlace.click();
+    }
+  </script>
+</body>
+</html>
