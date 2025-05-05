@@ -184,10 +184,10 @@
         let modelo;
         //3 puño
         //
-        const etiquetas = ["a_feliz", "v_sorpresa", "c_neutral", "d_enojado", "e_asco", "f_miedo", "g_tristeza"];
+        const etiquetas = ['feliz', 'triste', 'enojo', 'sorpresa', 'neutral'];
 
         async function cargarModelo() {
-            modelo = await tf.loadLayersModel('/tfjs_model_gestos2/model.json');
+            modelo = await tf.loadLayersModel('/tfjs_gestos/model.json');
             console.log("Modelo de gestos cargado");
         }
 
@@ -212,6 +212,7 @@
             });
 
             const pred = modelo.predict(tensor);
+            console.log(pred);
             const data = await pred.data();
             console.log(data);
 

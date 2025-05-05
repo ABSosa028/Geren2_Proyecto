@@ -5,3 +5,6 @@
 *.bin
 *.keras
 *.h5
+/ia/ia-gestosV3/node_modules
+/ia/ia-gestosV3/rostros
+/ia/ia-gestosV3/rostros_emociones
